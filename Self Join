@@ -11,8 +11,10 @@
 
 
 
-Q09 Give a distinct list of the stops which may be reached from 'Craiglockhart' by taking one bus, including 'Craiglockhart' itself, offered by the LRT company. 
-Include the company and bus no. of the relevant services.
+Q09 Give a distinct list of the stops which may be reached from 'Craiglockhart' by taking one bus, including 'Craiglockhart' itself, 
+offered by the LRT company. Include the company and bus no. of the relevant services.
+
+Ans:
 
 SELECT stopa.name, a.company, a.num
 FROM route a left JOIN route b ON
@@ -21,3 +23,40 @@ FROM route a left JOIN route b ON
     JOIN stops stopb ON b.stop = stopb.id
 WHERE stopb.name = 'Craiglockhart'
 ORDER BY a.num, a.pos
+
+
+Q10 Find the routes involving two buses that can go from Craiglockhart to Lochend.
+Show the bus no. and company for the first bus, the name of the stop for the transfer,
+and the bus no. and company for the second bus.
+
+Hint
+Self-join twice to find buses that visit Craiglockhart and Lochend, then join those on matching stops.
+
+Ans version 1 from StackOverflow:
+
+SELECT DISTINCT S.num, S.company, stops.name, E.num, E.company
+FROM
+(SELECT a.company, a.num, a.pos, b.stop
+ FROM route a JOIN route b ON (a.company=b.company AND a.num=b.num)
+ WHERE a.stop=(SELECT id FROM stops WHERE name= 'Craiglockhart')
+)S
+  JOIN
+(SELECT a.company, a.num, a.pos, b.stop
+ FROM route a JOIN route b ON (a.company=b.company AND a.num=b.num)
+ WHERE a.stop=(SELECT id FROM stops WHERE name= 'Lochend')
+)E
+ON (S.stop = E.stop)
+JOIN stops ON(stops.id = S.stop)
+order by S.num, stops.name, E.num
+
+Ans version 2 of mine:
+select r1.num, r1.company, transfer1.name, r4.num, r4.company
+from stops start join route r1 on start.id = r1.stop
+join route r2 on r1.num = r2.num and r1.company = r2.company
+join stops transfer1 on transfer1.id = r2.stop
+join route r3 on r3.stop = transfer1.id
+join stops transfer2 on transfer2.id = r3.stop
+join route r4 on r4.company = r3.company and r4.num = r3.num
+join stops terminal on terminal.id = r4.stop
+where start.name = 'Craiglockhart' and terminal.name = 'Lochend'
+order by r1.num, transfer1.name, r4.num
