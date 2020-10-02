@@ -61,3 +61,22 @@ SELECT r1.num, r1.company, transfer1.name, r4.num, r4.company
     JOIN stops terminal ON terminal.id = r4.stop
 WHERE start.name = 'Craiglockhart' AND terminal.name = 'Lochend'
 ORDER BY r1.num, transfer1.name, r4.num
+
+
+Ans version 3 of mine:
+
+select clh.num, clh.company, transfer.name, lcd.num, lcd.company
+from
+(select 1stroute.num, 1stroute.company, 2ndroute.stop
+from route 1stroute join route 2ndroute on 1stroute.num = 2ndroute.num and 1stroute.company = 2ndroute.company
+join stops start on start.id = 1stroute.stop
+where start.name = 'Craiglockhart') clh
+
+join (select 1stroute.num, 1stroute.company, 2ndroute.stop
+from route 1stroute join route 2ndroute on 1stroute.num = 2ndroute.num and 1stroute.company = 2ndroute.company
+join stops start on start.id = 1stroute.stop
+where start.name = 'Lochend') lcd
+
+on clh.stop = lcd.stop
+join stops transfer on transfer.id = clh.stop
+order by clh.num, transfer.name, lcd.num
