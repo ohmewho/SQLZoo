@@ -50,13 +50,14 @@ JOIN stops ON(stops.id = S.stop)
 order by S.num, stops.name, E.num
 
 Ans version 2 of mine:
-select r1.num, r1.company, transfer1.name, r4.num, r4.company
-from stops start join route r1 on start.id = r1.stop
-join route r2 on r1.num = r2.num and r1.company = r2.company
-join stops transfer1 on transfer1.id = r2.stop
-join route r3 on r3.stop = transfer1.id
-join stops transfer2 on transfer2.id = r3.stop
-join route r4 on r4.company = r3.company and r4.num = r3.num
-join stops terminal on terminal.id = r4.stop
-where start.name = 'Craiglockhart' and terminal.name = 'Lochend'
-order by r1.num, transfer1.name, r4.num
+
+SELECT r1.num, r1.company, transfer1.name, r4.num, r4.company
+  FROM stops start JOIN route r1 ON start.id = r1.stop
+    JOIN route r2 ON r1.num = r2.num AND r1.company = r2.company
+    JOIN stops transfer1 ON transfer1.id = r2.stop
+    JOIN route r3 ON r3.stop = transfer1.id
+    JOIN stops transfer2 ON transfer2.id = r3.stop
+    JOIN route r4 on r4.company = r3.company AND r4.num = r3.num
+    JOIN stops terminal ON terminal.id = r4.stop
+WHERE start.name = 'Craiglockhart' AND terminal.name = 'Lochend'
+ORDER BY r1.num, transfer1.name, r4.num
